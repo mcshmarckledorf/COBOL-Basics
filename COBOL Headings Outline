@@ -1,0 +1,93 @@
+IDENTIFICATION DIVISION.
+*>Identifies the program and provides documentation about it.
+
+PROGRAM-ID.
+*>Program name.  This is the most used portion of this division.  
+
+AUTHOR.
+*>Program author.
+
+DATE-WRITTEN.
+*>When the program was created.
+
+DATE-COMPILED.
+*>Often generated automatically.
+
+INSTALLATION.
+*>Company or organization.
+
+REMARKS.
+*>Documentation comments.
+
+ENVIRONMENT DIVISION.
+*>Describes the environment outside the program.
+
+CONFIGURATION SECTION.
+*Describes the computer, compiler, and environment.
+
+SOURCE-COMPUTER.
+*>Where the program was developed.
+
+OBJECT-COMPUTER.
+*>Where the program will run.
+
+SPECIAL-NAMES.
+*>Defines special characters, switches, decimal point conventions, etc., and is often omitted on modern programs.
+
+INPUT-OUTPUT SECTION.
+*>Defines files and external devices.
+
+FILE-CONTROL.
+*>Connects logical COBOL file names to physical files.
+*>Example below:
+SELECT CUSTOMER-FILE
+    ASSIGN TO "CUSTOMER.DAT".
+
+I-O-CONTROL.
+*>Advanced file-handling options: buffering, multiple files on same device, file locking behavior.
+
+DATA DIVISION.
+*>Defines all data used by the program.
+
+FILE SECTION.
+*>Describes records stored in files.
+
+FD CUSTOMER-FILE.
+*>This is the file.
+
+01 CUSTOMER-RECORD.
+*>This is the record, i.e., one line in the file.
+
+WORKING-STORAGE SECTION.
+*>Program variables that exist for the entire run.
+*>Common examples below:
+01 EOF-FLAG.
+01 TOTAL-SALES.
+01 COUNTER.
+
+LOCAL-STORAGE SECTION.
+*>Variables recreated each time a program or routine starts, i.e., some counters reset to a value every time the program reruns before STOP RUN.
+
+LINKAGE SECTION.
+*>Where the subprogram identifies shared values from the main program, and vice versa as needed.
+
+SCREEN SECTION.
+*>Defines text-based termianl screens.
+
+COMMUNICATION SECTION.
+*>Message and communications handling.
+
+PROCEDURE DIVISION.
+*>Contains executable instructions.  Everything the program does happens here.
+
+DECLARATIVES
+*>Optional error handling and special procedures.
+
+MAIN-SECTION.
+*>Groups of related paragraphs, see below.  Less common in modern style, but heavily used in older enterprise code.
+
+READ-CUSTOMER.
+*>Paragraphs can be created and defined outside STOP RUN to keep code clean and effiient, i.e., allowing multiple aspects of a program to re-reference a paragraph.
+
+STOP RUN.
+*>Entire program stops.  Different from END PROGRAM or GOBACK.
