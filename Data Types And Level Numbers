@@ -1,0 +1,40 @@
+FD CASE-FILE.
+*>The above is if we are in the FILE SECTION.
+
+01 CASE-RECORD.
+   05 CASE-NUMBER     PIC 9(6).
+*>Numerical picture values can have compressed byte sizes through PIC 9(n) COMP or PIC 9(n) COMP-3.
+   05 CLIENT-NAME     PIC X(25).
+*>PIC X cannot be compacted by COMP or COMP-3.
+   
+   05 FILING-FEE      PIC 9(4)V99.
+*>Can have 01, 05, 10, 15, etc. with sub-items inside a record.
+*>V is not itself a decimal or a value, it is an implied marker for COBOL to know where a decimal would go.  This helps prevent the decimal-rounding errors that occur in programming arithmetic.
+
+   01 FILING-FEE-DISP    PIC $ZZZ9.99.
+
+   01 P0S-NEG PIC S9(5)
+
+*>Note that grouping by 01, 05, 10 is the same as 01, 02, 03; the compiler only cares that the child is larger in number than the parent, but typically, by five is used.
+
+01 FULL-NAME.
+   05 FIRST-NAME PIC X(15).
+   05 LAST-NAME  PIC X(15).
+
+66 COMPLETE-NAME RENAMES FIRST-NAME THRU LAST-NAME.
+*>Designates an alternative view of existing data, letting you refer to both data points as one large field.
+
+77 TAX-RATE PIC 9V999 VALUE .075.
+*>Denotes a stand alone value not part of any group.  01 TAX-RATE ungrouped would serve the same purpose.
+
+78 MAX-CLIENTS VALUE 500.
+78 REPORT-LINES-PER-PAGE VALUE 60.
+*>Indicates a constant that cannot be changed at runtime.  78 is not a storage location, but rather a rule or a name the compiler substitutes with a permanent value.
+
+01 CASE-STATUS PIC X.
+
+   88 CASE-OPEN    VALUE "O".
+   88 CASE-CLOSED  VALUE "C".
+   88 CASE-PENDING VALUE "P".
+
+*>Allows for condensed If statements, i.e., instead of "IF CASE-STATUS = 'O'", can say "IF CASE-OPEN".  This makes code read almost like English.
