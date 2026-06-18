@@ -1,0 +1,86 @@
+IF condition
+    statement-1
+ELSE
+    statement-2
+END-IF.
+
+
+IF BALANCE > 0 AND STATUS = "ACTIVE"
+    DISPLAY "ACCOUNT IS IN GOOD STANDING"
+END-IF.
+
+
+IF condition-1
+    IF condition-2
+        statement-a
+    ELSE
+        statement-b
+    END-IF
+ELSE
+    statement-c
+END-IF.
+
+
+EVALUATE variable
+    WHEN value-1
+        statements
+    WHEN value-2
+        statements
+    WHEN OTHER
+        statements
+END-EVALUATE.
+
+
+EVALUATE ACCOUNT-TYPE
+    WHEN "SAVINGS"
+        MOVE .02 TO INTEREST-RATE
+    WHEN "CHECKING"
+        MOVE .01 TO INTEREST-RATE
+    WHEN "BUSINESS"
+        MOVE .03 TO INTEREST-RATE
+    WHEN OTHER
+        MOVE 0 TO INTEREST-RATE
+END-EVALUATE.
+
+
+EVALUATE TRUE
+    WHEN BALANCE >= 100000
+        MOVE "PLATINUM" TO CUSTOMER-LEVEL
+    WHEN BALANCE >= 50000
+        MOVE "GOLD" TO CUSTOMER-LEVEL
+    WHEN BALANCE >= 10000
+        MOVE "SILVER" TO CUSTOMER-LEVEL
+    WHEN OTHER
+        MOVE "STANDARD" TO CUSTOMER-LEVEL
+END-EVALUATE.
+*>Note that the highest possible condition goes first, becuase reverse order would make everything true
+
+
+IF CASE-STATUS NOT = "OPEN"
+    MOVE "ARCHIVE" TO ROUTING-CODE
+ELSE
+    EVALUATE TRUE
+        WHEN CASE-AMOUNT >= 50000
+            MOVE "SENIOR-ATTORNEY" TO ROUTING-CODE
+        WHEN CASE-AMOUNT >= 10000
+            MOVE "STAFF-ATTORNEY" TO ROUTING-CODE
+        WHEN OTHER
+            MOVE "PARALEGAL" TO ROUTING-CODE
+    END-EVALUATE
+END-IF.
+*>Note that the end of the statement is "IF", thus no period for "END-EVALUATE"
+
+
+EVALUATE TRUE
+    WHEN CASE-VALUE >= 250000
+        IF CLIENT-STATUS = "VIP"
+            MOVE "PARTNER" TO ASSIGNMENT-CODE
+        ELSE
+            MOVE "SENIOR-ASSOCIATE" TO ASSIGNMENT-CODE
+        END-IF
+    WHEN CASE-VALUE >= 100000
+        MOVE "ASSOCIATE" TO ASSIGNMENT-CODE
+    WHEN OTHER
+        MOVE "PARALEGAL" TO ASSIGNMENT-CODE
+END-EVALUATE.
+*>Note that the end of the statement is "EVALUATE", thus no period for "END-IF"
