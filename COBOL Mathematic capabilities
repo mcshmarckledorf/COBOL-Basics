@@ -1,0 +1,48 @@
+ADD A TO B.
+    GIVING C.
+    DISPLAY C.
+COMPUTE C = A + B.
+
+SUBTRACT A FROM B.
+COMPUTE C = A - B.
+
+MULTIPLY A BY B.
+COMPUTE C = A * B.
+
+DIVIDE A INTO B.
+COMPUTE C = A / B.
+
+DIVIDE 10 INTO 100
+    GIVING QUOTIENT
+    REMAINDER LEFTOVER.
+Can also "GIVING REMAINDER"
+
+COBOL follows the order of operations, when multiple operations apply
+
+Can use "ROUNDED", so "DIVIDE A INTO B ROUNDED." or "COMPUTE C ROUNDED = A / B."
+
+REMINDER:
+   DO MATH WITH 01 VALUE PIC 9(4)V99 (total of six integer placeholders).
+       "V" is the implied decimal
+       Can use "S" to designate positive/negative sign
+   MOVE THE MATHEMATICAL NUMBER INTO 01 DISP-VALUE PIC ZZZ9.99
+       Can use "$" to include monetary symbol
+   DISPLAY DISP-VALUE.
+
+ADD A TO B
+    ON SIZE ERROR
+        DISPLAY "[VALUE] TOO LARGE.".
+
+
+REMINDER: Math should be computed by values of the same data "tier"
+i.e.
+01 GROSS-INVOICE.
+   05 HOURS-WORKED ...
+COMPUTE GROSS-INVOICE = HOURS-WORKED * HOURLY-RATE.
+May result in overlapping memory usage, corrupted calculations, nonsensical results
+
+COBOL does NOT inherently support trig functions, i.e., SIN, COS, TAN
+But some compilers provide library functions like "CALL "SIN" USING ANGLE."  
+Otherwise, precompute the value elsewhere.
+Same with exlicit exponents or logarithms.
+
