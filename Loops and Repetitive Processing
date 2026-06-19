@@ -1,0 +1,149 @@
+PERFORM 4 TIMES
+    DISPLAY "PROCESSING"
+END-PERFORM.
+*>PERFORM executes an action, and you can set how many times it occurs.
+
+
+PROCEDURE DIVISION.
+PERFORM SAY-HELLO 3 TIMES.
+STOP RUN.
+
+SAY-HELLO.
+    DISPLAY "HELLO".
+*>In this instance, you can name a pragraph, either before or after "STOP RUN" (will be seen during compile time), and PERFORM executes that paragraph.
+
+
+01 WS-COUNTER PIC 9 VALUE 1.
+PERFORM UNTIL WS-COUNTER > 3
+    DISPLAY WS-COUNTER
+    ADD 1 TO WS-COUNTER
+END-PERFORM.
+*>Condensed and leaving out divisions of program
+*>Common errors: failure to increase counter, or setting end condition to a single value that counter skips over (i.e., end at C=3, starts at 2, increase by 2)
+*>If this is part of a subprogram that is called without ending, you may want the counter in the LOCAL STORAGE SECTION, as that will reset the counter at each instance.
+
+
+WORKING-STORAGE SECTION.
+01 WS-COUNT PIC 99.
+
+PROCEDURE DIVISION.
+    PERFORM VARYING WS-COUNT
+        FROM 1
+        BY 1
+        UNTIL WS-COUNT > 5
+        DISPLAY WS-COUNT
+    END-PERFORM.
+STOP RUN.
+*>This avoids needing to specifically set the counter, i.e., "MOVE 1 TO WS-COUNT".
+*>Modernly, the period after END-PERFORM may not be necessary.
+
+
+01 WS-FLOOR PIC 9.
+01 WS-ROOM  PIC 9.
+PERFORM VARYING WS-FLOOR
+    FROM 1
+    BY 1
+    UNTIL WS-FLOOR > 2
+    DISPLAY "FLOOR " WS-FLOOR
+    PERFORM VARYING WS-ROOM
+        FROM 1
+        BY 1
+        UNTIL WS-ROOM > 3
+        DISPLAY " ROOM " WS-ROOM
+    END-PERFORM
+END-PERFORM.
+
+
+FILE SECTION.
+FD  CUSTOMER-FILE.
+01  CUSTOMER-RECORD.
+    05 CUSTOMER-ID     PIC 9(5).
+    05 CUSTOMER-BAL    PIC 9(7)V99.
+
+WORKING-STORAGE SECTION.
+01 WS-TOTAL PIC 9(7)V99.
+
+OPEN INPUT CUSTOMER-FILE.
+READ CUSTOMER-FILE
+    AT END MOVE "Y" TO WS-EOF
+END-READ.
+PERFORM UNTIL WS-EOF = "Y"
+    PERFORM PROCESS-RECORD
+    READ CUSTOMER-FILE
+        AT END MOVE "Y" TO WS-EOF
+    END-READ
+END-PERFORM.
+CLOSE CUSTOMER-FILE.
+*>This is an important and common perform procedure involving batch record processing
+*>Conceptually: the file is opened, the file contains records, the record contains data; 
+*>the priming READ loads the first record from the file, which is then "processed" by whatever PERFORM is;
+*>"AT END" acts as an "if no more records exist in this file" trigger, i.e., the end of the file is reached
+*>More complete example below.
+
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. CUSTOMER-BATCH.
+
+ENVIRONMENT DIVISION.
+INPUT-OUTPUT SECTION.
+FILE-CONTROL.
+    SELECT CUSTOMER-FILE ASSIGN TO "CUSTOMERS.DAT"
+        ORGANIZATION IS LINE SEQUENTIAL.
+
+DATA DIVISION.
+FILE SECTION.
+FD  CUSTOMER-FILE.
+01  CUSTOMER-RECORD.
+    05 CUSTOMER-ID     PIC 9(5).
+    05 CUSTOMER-NAME   PIC X(20).
+    05 CUSTOMER-BAL    PIC 9(7)V99.
+
+WORKING-STORAGE SECTION.
+01  WS-END-OF-FILE     PIC X VALUE "N".
+01  WS-TOTAL-BALANCE    PIC 9(9)V99 VALUE 0.
+01  WS-COUNT           PIC 9(5) VALUE 0.
+
+PROCEDURE DIVISION.
+MAIN-PROCESS.
+    OPEN INPUT CUSTOMER-FILE
+    PERFORM READ-NEXT-RECORD
+    PERFORM UNTIL WS-END-OF-FILE = "Y"
+        PERFORM PROCESS-RECORD
+        PERFORM READ-NEXT-RECORD
+    END-PERFORM
+    DISPLAY "TOTAL CUSTOMERS: " WS-COUNT
+    DISPLAY "TOTAL BALANCE:   " WS-TOTAL-BALANCE
+    CLOSE CUSTOMER-FILE
+    STOP RUN.
+*-----------------------------------------
+READ-NEXT-RECORD.
+    READ CUSTOMER-FILE
+        AT END
+            MOVE "Y" TO WS-END-OF-FILE
+        NOT AT END
+            CONTINUE
+    END-READ.
+*>It is not required to add "NOT AT END"
+*>CONTINUE just means "do nothing"
+*-----------------------------------------
+PROCESS-RECORD.
+    ADD 1 TO WS-COUNT
+    ADD CUSTOMER-BAL TO WS-TOTAL-BALANCE
+    DISPLAY "PROCESSING CUSTOMER: " CUSTOMER-ID
+
+
+PERFORM 10 TIMES
+    CALL "TAXCALC"
+END-PERFORM
+*>There is no "CALL 10 TIMES"
+
+PERFORM UNTIL EOF
+    CALL "PROCESS-RECORD"
+END-PERFORM
+*>There is no "CALL UNTIL EOF"
+
+PERFORM VARYING WS-COUNT FROM 1 BY 1
+    UNTIL WS-COUNT > 10
+    CALL "TAXCALC"
+END-PERFORM
+*>There is no "CALL VARYING"
