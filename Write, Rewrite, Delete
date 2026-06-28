@@ -1,0 +1,95 @@
+WRITE CASE-RECORD
+    INVALID KEY
+        DISPLAY "CASE ALREADY EXISTS"
+*> or "DUPLICATE KEY"
+END-WRITE
+*>Creates a new record, unlesss the record to be made already exists.
+*>Read = pull an existing record | Write = create a new record.
+
+
+MOVE 100501 TO SEARCH-CASE-NUMBER.
+READ CASE-FILE
+    KEY IS SEARCH-CASE-NUMBER
+    INVALID KEY
+        DISPLAY "CASE NOT FOUND"
+    NOT INVALID KEY
+        MOVE "CLOSED" TO CASE-STATUS
+        REWRITE CASE-RECORD
+END-READ.
+*>Notice: the record is loaded into temporary storage, you then move/modify the data that you want to change, then rewrite the record.
+*>Procedure: READ, MODIFY, REWRITE
+
+
+*>Alternative order:
+REWRITE CASE-RECORD
+    INVALID KEY
+        DISPLAY "UPDATE FAILED"
+END-REWRITE
+
+
+MOVE 100501 TO SEARCH-CASE-NUMBER
+READ CASE-FILE
+    KEY IS SEARCH-CASE-NUMBER
+    INVALID KEY
+        DISPLAY "CASE NOT FOUND"
+    NOT INVALID KEY
+        DELETE CASE-FILE
+END-READ
+
+
+*>Alternative order:
+DELETE CASE-FILE
+    INVALID KEY
+        DISPLAY "DELETE FAILED"
+END-DELETE
+
+
+*>Mini-project: Legal case tracking system that opens an indexed file, reads a case, updating the file, closing the file.
+IDENTIFICATION DIVISION.
+PROGRAM-ID.  CASES.
+
+
+ENVIRONMENT DIVISION.
+FILE-CONTROL.
+SELECT CASE-FILE
+    ASSIGN TO "CASES.DAT"
+    ORGANIZATION IS INDEXED
+    ACCESS MODE IS DYNAMIC
+    RECORD KEY IS CASE-NUMBER.
+
+
+DATA DIVISION.
+FILE-SECTION.
+FD CASE-FILE.
+01 CASE-RECORD.
+   05 CASE-NUMBER      PIC 9(6).
+   05 CLIENT-NAME      PIC X(30).
+   05 CASE-STATUS      PIC X(10).
+
+WORKING-STORAGE SECTION.
+*>Blank.
+
+
+PROCEDURE DIVISION.
+OPEN I-O CASE-FILE.
+*>I-O because this function takes an input and produces an output.  
+*>Use INPUT if just reading a record, and OUTPUT if creating a new file.  
+*>Can use I-O for programs that just read or write, but it is best practice to use what the program specifically does.
+
+MOVE 100501 TO CASE-NUMBER.
+*>Expected in advanced iteration that CASE-NUMBER would be an accepted value from user.
+
+READ CASE-FILE
+    KEY IS CASE-NUMBER
+    INVALID KEY
+          DISPLAY "CASE NOT FOUND"
+     ELSE
+           MOVE "CLOSED" TO CASE-STATUS
+           REWRITE CASE-RECORD
+           DISPLAY "100501 is closed."
+     END-IF
+END-READ.
+
+CLOSE CASE-FILE.
+
+STOP RUN.
